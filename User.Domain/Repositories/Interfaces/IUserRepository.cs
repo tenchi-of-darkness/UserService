@@ -4,8 +4,8 @@ namespace User.UseCases.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    Task<UserEntity?> GetUserById(Guid id);
+    Task<UserEntity?> GetUserById(string id);
     Task<IEnumerable<UserEntity>> SearchUserByName(string? searchValue, int page, int pageSize);
     Task<bool> AddUser(UserEntity entity);
-    Task<bool> DeleteUser(Guid id);
+    Task<bool> DeleteUser(string id);
 }

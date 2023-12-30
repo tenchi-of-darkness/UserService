@@ -5,13 +5,7 @@ namespace User.UseCases.Entities;
 
 public class UserEntity
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; }
-
-    public string Name { get; set; } = "";
-
-    public string LocationName { get; set; } = "";
-    public Point Location { get; set; } = Point.Empty;
-    public Guid OwnerUserId { get; set; }
-    public string? Description { get; set; } = "";
+    public string Id { get; set; }
+    public string? UserName { get; set; } = null;
+    public string? Bio { get; set; } = null;
 }

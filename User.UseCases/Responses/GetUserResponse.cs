@@ -2,5 +2,7 @@
 
 namespace User.UseCases.Responses;
 
-public record GetUserResponse(Guid Id, string Name, string LocationName, Point Location, Guid OwnerUserId,
-    string Description);
+public record GetUserResponse(
+    string Id,
+    string UserName,
+    string? Bio);

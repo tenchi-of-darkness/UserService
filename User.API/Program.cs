@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text.Json.Serialization;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NetTopologySuite.IO.Converters;
 using User.Data.Extensions;
@@ -6,6 +8,8 @@ using User.UseCases.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+IdentityModelEventSource.ShowPII = true;
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -22,7 +26,7 @@ builder.Services.AddLogic().AddData(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-var authority = "https://securetoken.google.com/" + builder.Configuration["FireBase:AppId"];
+var authority = "https://securetoken.google.com/" + builder.Configuration["FireBase:ProjectId"];
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -32,12 +36,14 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
         ValidateIssuer = true,
         ValidIssuer = authority,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["FireBase:AppId"],
+        ValidAudience = builder.Configuration["FireBase:ProjectId"],
         ValidateLifetime = true
     };
 });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -48,10 +54,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(options =>
-{
-    options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-});
+app.UseCors(options => { options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 
 app.UseAuthentication();
 

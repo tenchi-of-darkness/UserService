@@ -1,12 +1,12 @@
-﻿using User.UseCases.Requests.Activities;
+﻿using User.UseCases.Requests.User;
 using User.UseCases.Responses;
 
 namespace User.UseCases.Services.Interfaces;
 
 public interface IUserService
 {
-    Task<GetUserResponse?> GetUserById(Guid id);
+    Task<GetUserResponse?> GetUser();
     Task<GetUsersResponse> GetUsers(string? searchValue, int page, int pageSize);
     Task<AddUserResponse> AddUser(AddUserRequest request);
-    Task<bool> DeleteUser(Guid id);
+    Task<bool> DeleteUser(string id);
 }

@@ -2,14 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using User.API.DTO;
-using User.UseCases.Requests.Activities;
+using User.UseCases.Entities;
+using User.UseCases.Requests.User;
 using User.UseCases.Responses;
 using User.UseCases.Services.Interfaces;
 
 namespace User.API.Controllers;
 
 [ApiController]
-[Route("api/activity")]
+[Route("api/user")]
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
@@ -23,22 +24,24 @@ public class UserController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<UserDTO>> GetUserById([FromRoute] Guid id)
+    [HttpGet]
+    [Authorize]
+    public async Task<ActionResult<UserDTO>> GetUser()
     {
-        var activity = await _service.GetUserById(id);
-        if (activity == null)
+        var user = await _service.GetUser();
+        if (user == null)
         {
             return NotFound();
         }
-
-        return Ok(_mapper.Map<UserDTO>(activity));
+    
+        return Ok(_mapper.Map<UserDTO>(_mapper.Map<UserEntity>(user)));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers([FromRoute] GetActivitiesRequest request)
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers([FromRoute] GetUsersRequest request)
     {
-        return Ok(_mapper.Map<UserDTO[]>(await _service.GetUsers(request.SearchValue, request.Page, request.PageSize)));
+        var response = await _service.GetUsers(request.SearchValue, request.Page, request.PageSize);
+        return Ok(_mapper.Map<UserDTO[]>(response.Users));
     }
 
     [HttpPost]
@@ -59,7 +62,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult> DeleteUser(Guid id)
+    public async Task<ActionResult> DeleteUser(string id)
     {
         if (await _service.DeleteUser(id))
             return Ok();

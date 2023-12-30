@@ -4,14 +4,7 @@ namespace User.API.DTO;
 
 public class UserDTO
 {
-    public Guid Id { get; set; }
-
-    public string Name { get; set; }
-    
-    public string LocationName { get; set; }
-    
-    public double LocationLat { get; set; }
-    public double LocationLong { get; set; }
-    public Guid OwnerUserId { get; set; }
-    public string? Description { get; set; }
+    public string Id { get; set; }
+    public string? UserName { get; set; }
+    public string? Bio { get; set; }
 }

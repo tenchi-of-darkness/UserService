@@ -25,5 +25,5 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<UserDBO>().HasKey(x => x.Id);
     }
     
-    public DbSet<UserDBO> Activities { get; set; } = null!;
+    public DbSet<UserDBO> Users { get; init; }
 }

@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using RTools_NTS.Util;
 using User.UseCases.Entities;
 using User.UseCases.Repositories.Interfaces;
-using User.UseCases.Requests.Activities;
+using User.UseCases.Requests.User;
 using User.UseCases.Responses;
 using User.UseCases.Services.Interfaces;
 
@@ -11,44 +14,49 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly HttpContext? _context;
 
-    public UserService(IUserRepository userRepository, IMapper mapper)
+    public UserService(IUserRepository userRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
         _mapper = mapper;
+        _context = httpContextAccessor.HttpContext;
     }
 
-    public async Task<GetUserResponse?> GetUserById(Guid id)
+    public async Task<GetUserResponse?> GetUser()
     {
-        return _mapper.Map<GetUserResponse>(await _userRepository.GetUserById(id));
+        var userId = _context?.User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
+
+        if (userId == null)
+        {
+            return null;
+        }
+
+        var entity = await _userRepository.GetUserById(userId);
+        return _mapper.Map<GetUserResponse>(entity);
     }
 
     public async Task<GetUsersResponse> GetUsers(string? searchValue, int page, int pageSize)
     {
-        return new GetUsersResponse(_mapper.Map<GetUserResponse[]>(await _userRepository.SearchUserByName(searchValue, page, pageSize)));
+        var entities = await _userRepository.SearchUserByName(searchValue, page, pageSize);
+        return new GetUsersResponse(_mapper.Map<GetUserResponse[]>(entities));
     }
 
     public async Task<AddUserResponse> AddUser(AddUserRequest request)
     {
-        if (request.Description?.Length >255)
+        if (request.Bio?.Length > 255)
         {
             return new AddUserResponse(FailureType.User,
-                "Description has too many characters. Only 255 characters are allowed");
+                "Bio has too many characters. Only 255 characters are allowed");
         }
 
-        var activity = _mapper.Map<UserEntity>(request);
-
-        // activity.OwnerUserId = 
-
-        if (!await _userRepository.AddUser(activity))
-        {
+        if (!await _userRepository.AddUser(_mapper.Map<UserEntity>(request)))
             return new AddUserResponse(FailureType.Server, "Database failure");
-        }
 
         return new AddUserResponse();
     }
 
-    public async Task<bool> DeleteUser(Guid id)
+    public async Task<bool> DeleteUser(string id)
     {
         return await _userRepository.DeleteUser(id);
     }
