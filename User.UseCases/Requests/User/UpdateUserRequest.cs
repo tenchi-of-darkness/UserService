@@ -3,11 +3,6 @@ using User.UseCases.Responses;
 
 namespace User.UseCases.Requests.User;
 
-public record AddUserRequest(
-    string Id,
+public record UpdateUserRequest(
     string UserName,
-    string LocationName,
-    double LocationLat,
-    double LocationLong,
-    Guid OwnerUserId,
     string? Bio);

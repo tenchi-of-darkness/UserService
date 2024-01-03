@@ -9,8 +9,8 @@ public class ActivityMapping: Profile
 {
     public ActivityMapping()
     {
-        CreateMap<AddUserRequest, UserEntity>();
-        CreateMap<UserEntity, AddUserResponse>();
+        CreateMap<UpdateUserRequest, UserEntity>();
+        CreateMap<UserEntity, UpdateUserResponse>();
         CreateMap<UserEntity, GetUserResponse>();
         CreateMap<GetUserResponse, UserEntity>();
     }

@@ -45,9 +45,9 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<AddUserResponse>> AddUser([FromBody] AddUserRequest request)
+    public async Task<ActionResult<UpdateUserResponse>> UpdateUser([FromBody] UpdateUserRequest request)
     {
-        AddUserResponse response = await _service.AddUser(request);
+        UpdateUserResponse response = await _service.UpdateUser(request);
         if (response.FailureReason == null)
         {
             return Ok();

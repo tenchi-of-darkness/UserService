@@ -42,18 +42,34 @@ public class UserService : IUserService
         return new GetUsersResponse(_mapper.Map<GetUserResponse[]>(entities));
     }
 
-    public async Task<AddUserResponse> AddUser(AddUserRequest request)
+    public async Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request)
     {
         if (request.Bio?.Length > 255)
         {
-            return new AddUserResponse(FailureType.User,
+            return new UpdateUserResponse(FailureType.User,
                 "Bio has too many characters. Only 255 characters are allowed");
         }
 
-        if (!await _userRepository.AddUser(_mapper.Map<UserEntity>(request)))
-            return new AddUserResponse(FailureType.Server, "Database failure");
+        if (request.UserName.Length > 30)
+        {
+            return new UpdateUserResponse(FailureType.User,"User name has too many characters. Only 30 characters are allowed");
+        }
+        
+        var userId = _context?.User.Claims.FirstOrDefault(x => x.Type == "user_id")?.Value;
 
-        return new AddUserResponse();
+        if (userId == null)
+        {
+            return new UpdateUserResponse(FailureType.User, "User is not authenticated");
+        }
+
+        var entity = _mapper.Map<UserEntity>(request);
+
+        entity.Id = userId;
+        
+        if (!await _userRepository.UpdateUser(entity))
+            return new UpdateUserResponse(FailureType.Server, "Database failure");
+
+        return new UpdateUserResponse();
     }
 
     public async Task<bool> DeleteUser(string id)

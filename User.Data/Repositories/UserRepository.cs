@@ -58,9 +58,9 @@ public class UserRepository : IUserRepository
         return _mapper.Map<UserEntity[]>(await query.Skip(skip).Take(pageSize).ToArrayAsync());
     }
 
-    public async Task<bool> AddUser(UserEntity entity)
+    public async Task<bool> UpdateUser(UserEntity entity)
     {
-        _context.Users.Add(_mapper.Map<UserDBO>(entity));
+        _context.Users.Update(_mapper.Map<UserDBO>(entity));
         return await _context.SaveChangesAsync() == 1;
     }
 

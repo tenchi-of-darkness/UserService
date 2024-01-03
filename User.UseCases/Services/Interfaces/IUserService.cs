@@ -7,6 +7,6 @@ public interface IUserService
 {
     Task<GetUserResponse?> GetUser();
     Task<GetUsersResponse> GetUsers(string? searchValue, int page, int pageSize);
-    Task<AddUserResponse> AddUser(AddUserRequest request);
+    Task<UpdateUserResponse> UpdateUser(UpdateUserRequest request);
     Task<bool> DeleteUser(string id);
 }
