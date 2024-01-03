@@ -64,3 +64,7 @@ jobs:
           tags: |
             tenchiofdarkness/travel-planner-user-service:latest
             tenchiofdarkness/travel-planner-user-service:${{ github.run_number }}
+      - name: Webhook
+        uses: distributhor/workflow-webhook@v3
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
